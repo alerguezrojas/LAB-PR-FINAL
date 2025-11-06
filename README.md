@@ -39,3 +39,10 @@ Clone the project in a directory of your choice and launch Eclipse.
 This project is licensed under the terms of the MIT license.
 
 
+# LAB-PR-FINAL
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=SONARCLOUD_PROJECT_KEY&metric=alert_status)](https://sonarcloud.io/summary?id=SONARCLOUD_PROJECT_KEY) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SONARCLOUD_PROJECT_KEY&metric=coverage)](https://sonarcloud.io/summary?id=SONARCLOUD_PROJECT_KEY) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=SONARCLOUD_PROJECT_KEY&metric=security_rating)](https://sonarcloud.io/summary?id=SONARCLOUD_PROJECT_KEY) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=SONARCLOUD_PROJECT_KEY&metric=sqale_rating)](https://sonarcloud.io/summary?id=SONARCLOUD_PROJECT_KEY)
+
+Descripción breve del proyecto.
+
+
