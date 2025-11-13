@@ -33,6 +33,7 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	private Node[][] nodeList;
 	private static Main runTimeMain;
 	private static Algorithm algorithm;
+	private static MazeGenerator mazeGenerator;
 
 	private final static int WIDTH = 1024;
 	private final static int HEIGHT = 768;
@@ -48,6 +49,7 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		frame.setLayout(null);
 		Main m = new Main();
 		algorithm =  new Algorithm();
+		mazeGenerator = new MazeGenerator(NODES_WIDTH, NODES_HEIGHT, m.nodeList);
 		// check
 		m.setBounds(0, 25, WIDTH, HEIGHT);
 		SetupMenu(frame);
@@ -75,11 +77,15 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		JMenuItem exit = new JMenuItem("Exit");
 
 		JMenuItem newGrid = new JMenuItem("New Board");
+		JMenuItem generateMaze = new JMenuItem("Generate Maze");
 		JMenuItem clearSearch = new JMenuItem("Clear Search Results");
 
 		JMenuItem bfsItem = new JMenuItem("Breadth-First Search");
 		JMenuItem dfsItem = new JMenuItem("Depth-First Search");
 		JMenuItem astarItem = new JMenuItem("A-star Search");
+		JMenuItem dijkstraItem = new JMenuItem("Dijkstra's Algorithm");
+		JMenuItem greedyBfsItem = new JMenuItem("Greedy Best-First Search");
+		JMenuItem bidirectionalItem = new JMenuItem("Bidirectional Search");
 		JMenuItem searchTime = new JMenuItem("Exploring time per Node");
 
 		openMaze.addActionListener(new ActionListener() {
@@ -116,6 +122,12 @@ public class Main extends Canvas implements Runnable, MouseListener {
 				runTimeMain.createNodes(true);
 			}
 		});
+		generateMaze.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mazeGenerator.generate();
+				runTimeMain.repaint();
+			}
+		});
 		clearSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				runTimeMain.clearSearchResults();
@@ -125,8 +137,9 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		bfsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (runTimeMain.isMazeValid()) {
-					algorithm.bfs(runTimeMain.start, runTimeMain.target, runTimeMain.NODES_WIDTH,
-							runTimeMain.NODES_HEIGHT);
+					runTimeMain.resetCosts();
+					algorithm.bfs(start, target, NODES_WIDTH,
+							NODES_HEIGHT);
 				} else {
 					System.out.println("DIDNT LAUNCH");
 				}
@@ -137,9 +150,11 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		dfsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (runTimeMain.isMazeValid()) {
-					algorithm.dfs(runTimeMain.getStart());
+					runTimeMain.resetCosts();
+					algorithm.dfs(start, target, NODES_WIDTH, NODES_HEIGHT);
 				} else {
-					System.out.println("DIDNT LAUNCH");
+					JOptionPane.showMessageDialog(frame, "You must have a starting and ending point.", "Invalid Maze",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
@@ -148,14 +163,40 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		astarItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (runTimeMain.isMazeValid()) {
-					algorithm.Astar(runTimeMain.start, runTimeMain.target, runTimeMain.NODES_WIDTH,
-							runTimeMain.NODES_HEIGHT);
+					runTimeMain.resetCosts();
+					algorithm.Astar(start, target, NODES_WIDTH,
+							NODES_HEIGHT);
 				} else {
 					System.out.println("DIDNT LAUNCH");
 				}
 
 			}
 
+		});		dijkstraItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (runTimeMain.isMazeValid()) {
+					runTimeMain.resetCosts();
+					algorithm.dijkstra(start, target, NODES_WIDTH, NODES_HEIGHT);
+				}
+			}
+		});
+
+		greedyBfsItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (runTimeMain.isMazeValid()) {
+					runTimeMain.resetCosts();
+					algorithm.greedyBestFirstSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+				}
+			}
+		});
+
+		bidirectionalItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (runTimeMain.isMazeValid()) {
+					runTimeMain.resetCosts();
+					algorithm.bidirectionalSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+				}
+			}
 		});
 		searchTime.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -168,10 +209,14 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		fileMenu.add(saveMaze);
 		fileMenu.add(openMaze);
 		boardMenu.add(newGrid);
+		boardMenu.add(generateMaze);
 		boardMenu.add(clearSearch);
 		algorithmsMenu.add(dfsItem);
 		algorithmsMenu.add(bfsItem);
 		algorithmsMenu.add(astarItem);
+		algorithmsMenu.add(dijkstraItem);
+		algorithmsMenu.add(greedyBfsItem);
+		algorithmsMenu.add(bidirectionalItem);
 		algorithmsMenu.add(searchTime);
 
 	}
@@ -206,6 +251,7 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		nodeList = new Node[NODES_WIDTH][NODES_HEIGHT];
 		createNodes(false);
 		setMazeDirections();
+		mazeGenerator = new MazeGenerator(NODES_WIDTH, NODES_HEIGHT, nodeList);
 	}
 	public void setMazeDirections() {
 		for (int i = 0; i < nodeList.length; i++) {
@@ -231,6 +277,9 @@ public class Main extends Canvas implements Runnable, MouseListener {
 				if(!ref) nodeList[i][j] = new Node(i, j).setX(15 + i * 35).setY(15 + j * 35);
 				nodeList[i][j].clearNode();
 			}
+		}
+		if (mazeGenerator == null) {
+			mazeGenerator = new MazeGenerator(NODES_WIDTH, NODES_HEIGHT, nodeList);
 		}
 	}
 
@@ -314,6 +363,14 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	public void resetCosts() {
+		for (int i = 0; i < nodeList.length; i++) {
+			for (int j = 0; j < nodeList[i].length; j++) {
+				nodeList[i][j].setgCost(Double.MAX_VALUE);
+			}
+		}
+	}
+
 	public void render(Graphics2D g) {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -357,7 +414,7 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	}
 
 	public boolean isMazeValid() {
-		return target == null ? false : true && start == null ? false : true;
+		return target != null && start != null;
 	}
 
 	private Node getStart() {

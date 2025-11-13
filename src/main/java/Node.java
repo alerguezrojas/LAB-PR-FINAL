@@ -14,6 +14,7 @@ public class Node {
 	private final int HEIGHT = 35;
 	private Node left, right, up, down;
 
+	private double gcost = Double.MAX_VALUE;
 	private double fcost;
 
 
@@ -23,6 +24,14 @@ public class Node {
 	}
 
 	public Node() {
+	}
+
+	public double getgCost() {
+		return gcost;
+	}
+
+	public void setgCost(double g) {
+		this.gcost = g;
 	}
 
 	public static double distance(Node a, Node b) {
@@ -62,6 +71,11 @@ public class Node {
 
 		}
 	}	
+
+	public void setAsWall() {
+		nodeColor = Color.BLACK;
+	}
+
 	public double getFCost() {
 		return this.fcost;
 	}
@@ -138,7 +152,7 @@ public class Node {
 	}
 
 	public boolean isSearched() {
-		return (nodeColor == Color.BLUE || nodeColor == Color.ORANGE);
+		return (nodeColor == Color.BLUE || nodeColor == Color.ORANGE || nodeColor == Color.CYAN);
 	}
 
 }

@@ -20,15 +20,21 @@ public class Algorithm {
 		this.searchtime = searchtime;
 	}
 
-	public void dfs(Node start) {
+	public void dfs(Node start, Node end, int graphWidth, int graphHeight) {
 		Stack<Node> nodes = new Stack<>();
+		Node[][] prev = new Node[graphWidth][graphHeight];
 		nodes.push(start);
 
 		while (!nodes.empty()) {
 
 			Node curNode = nodes.pop();
-			if (!curNode.isEnd()) {
+			if (curNode.isEnd()) {
+				curNode.setColor(Color.MAGENTA);
+				shortpath(prev, end);
+				break;
+			}
 
+			if (!curNode.isSearched()) {
 				curNode.setColor(Color.ORANGE);
 				try {
 					Thread.sleep(searchtime);
@@ -37,15 +43,13 @@ public class Algorithm {
 				}
 				curNode.setColor(Color.BLUE);
 				for (Node adjacent : curNode.getNeighbours()) {
-					nodes.push(adjacent);
+					if (!adjacent.isSearched()) {
+						nodes.push(adjacent);
+						prev[adjacent.getX()][adjacent.getY()] = curNode;
+					}
 				}
-
-			} else {
-				curNode.setColor(Color.MAGENTA);
-				break;
 			}
 		}
-
 	}
 
 	public void bfs(Node start, Node end, int graphWidth, int graphHeight) {
@@ -159,5 +163,160 @@ public class Algorithm {
 		
 	}
 
+	public void dijkstra(Node start, Node end, int graphWidth, int graphHeight) {
+		List<Node> openList = new ArrayList<>();
+		Node[][] prev = new Node[graphWidth][graphHeight];
+		openList.add(start);
 
+		for (int i = 0; i < graphWidth; i++) {
+			for (int j = 0; j < graphHeight; j++) {
+				// Assuming nodes are instantiated elsewhere and accessible
+				// For example, if you have a grid of nodes: grid[i][j]
+				// For now, let's just handle the start node's distance
+			}
+		}
+		start.setgCost(0);
+
+		while (!openList.isEmpty()) {
+			Collections.sort(openList, Comparator.comparingDouble(node -> node.getgCost())); // Or however distance is stored
+
+			Node curNode = openList.remove(0);
+
+			if (curNode.isEnd()) {
+				curNode.setColor(Color.MAGENTA);
+				shortpath(prev, end);
+				return;
+			}
+
+			curNode.setColor(Color.ORANGE);
+			try {
+				Thread.sleep(searchtime);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			curNode.setColor(Color.BLUE);
+
+			for (Node adjacent : curNode.getNeighbours()) {
+				if (adjacent.isSearched()) {
+					continue;
+				}
+				
+				double newDist = curNode.getgCost() + Node.distance(curNode, adjacent);
+				if (newDist < adjacent.getgCost()) {
+					adjacent.setgCost(newDist);
+					prev[adjacent.getX()][adjacent.getY()] = curNode;
+					if (!openList.contains(adjacent)) {
+						openList.add(adjacent);
+					}
+				}
+			}
+		}
+	}
+
+	public void greedyBestFirstSearch(Node start, Node end, int graphWidth, int graphHeight) {
+		List<Node> openList = new ArrayList<>();
+		Node[][] prev = new Node[graphWidth][graphHeight];
+		openList.add(start);
+
+		while (!openList.isEmpty()) {
+			Node curNode = getLeastHeuristic(openList, end, start); // Re-using heuristic logic, but only for h_cost
+			openList.remove(curNode);
+
+			if (curNode.isEnd()) {
+				curNode.setColor(Color.MAGENTA);
+				shortpath(prev, end);
+				return;
+			}
+
+			curNode.setColor(Color.ORANGE);
+			try {
+				Thread.sleep(searchtime);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			curNode.setColor(Color.BLUE);
+
+			for (Node adjacent : curNode.getNeighbours()) {
+				if (!adjacent.isSearched() && !openList.contains(adjacent)) {
+					prev[adjacent.getX()][adjacent.getY()] = curNode;
+					openList.add(adjacent);
+				}
+			}
+		}
+	}
+
+	public void bidirectionalSearch(Node start, Node end, int graphWidth, int graphHeight) {
+		Queue<Node> queueStart = new LinkedList<>();
+		Queue<Node> queueEnd = new LinkedList<>();
+
+		Node[][] prevStart = new Node[graphWidth][graphHeight];
+		Node[][] prevEnd = new Node[graphWidth][graphHeight];
+
+		boolean[] visitedStart = new boolean[graphWidth * graphHeight];
+		boolean[] visitedEnd = new boolean[graphWidth * graphHeight];
+
+		queueStart.add(start);
+		visitedStart[start.getX() * graphHeight + start.getY()] = true;
+
+		queueEnd.add(end);
+		visitedEnd[end.getX() * graphHeight + end.getY()] = true;
+
+		Node meetingPoint = null;
+
+		while (!queueStart.isEmpty() && !queueEnd.isEmpty()) {
+			Node nodeStart = queueStart.poll();
+			nodeStart.setColor(Color.ORANGE);
+			try {
+				Thread.sleep(searchtime);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			nodeStart.setColor(Color.BLUE);
+
+			for (Node neighbor : nodeStart.getNeighbours()) {
+				int neighborIndex = neighbor.getX() * graphHeight + neighbor.getY();
+				if (!visitedStart[neighborIndex]) {
+					visitedStart[neighborIndex] = true;
+					prevStart[neighbor.getX()][neighbor.getY()] = nodeStart;
+					queueStart.add(neighbor);
+
+					if (visitedEnd[neighborIndex]) {
+						meetingPoint = neighbor;
+						break;
+					}
+				}
+			}
+			if (meetingPoint != null) break;
+
+			Node nodeEnd = queueEnd.poll();
+			nodeEnd.setColor(Color.ORANGE);
+			try {
+				Thread.sleep(searchtime);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			nodeEnd.setColor(Color.BLUE);
+
+			for (Node neighbor : nodeEnd.getNeighbours()) {
+				int neighborIndex = neighbor.getX() * graphHeight + neighbor.getY();
+				if (!visitedEnd[neighborIndex]) {
+					visitedEnd[neighborIndex] = true;
+					prevEnd[neighbor.getX()][neighbor.getY()] = nodeEnd;
+					queueEnd.add(neighbor);
+
+					if (visitedStart[neighborIndex]) {
+						meetingPoint = neighbor;
+						break;
+					}
+				}
+			}
+			if (meetingPoint != null) break;
+		}
+
+		if (meetingPoint != null) {
+			shortpath(prevStart, meetingPoint);
+			shortpath(prevEnd, meetingPoint);
+			meetingPoint.setColor(Color.CYAN); // Meeting point
+		}
+	}
 }
