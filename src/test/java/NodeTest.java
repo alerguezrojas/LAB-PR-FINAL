@@ -3,8 +3,26 @@ import org.junit.jupiter.api.Test;
 import java.awt.Color;
 import java.util.List;
 
+/**
+ * Test unitarios para la clase {@link Node}.
+ * <p>
+ * Valida el funcionamiento de:
+ * <ul>
+ *     <li>Constructores y manejo de posiciones</li>
+ *     <li>Costos (gCost y fCost)</li>
+ *     <li>Cambio de color mediante interacciones</li>
+ *     <li>Métodos booleanos de estado</li>
+ *     <li>Obtención de nodos vecinos válidos</li>
+ *     <li>Operaciones básicas como setX, setY, clearNode, etc.</li>
+ * </ul>
+ */
 public class NodeTest {
 
+    /**
+     * Prueba que el constructor con parámetros asigna correctamente
+     * las posiciones X e Y y que los métodos getX() y getY()
+     * realizan la conversión adecuada.
+     */
     @Test
     public void testConstructorAndPositions() {
         Node n = new Node(50, 100);
@@ -12,6 +30,10 @@ public class NodeTest {
         assertEquals((100 - 15) / 35, n.getY());
     }
 
+    /**
+     * Verifica que los métodos setX() y setY() actualicen correctamente
+     * las coordenadas internas del nodo.
+     */
     @Test
     public void testSetXandY() {
         Node n = new Node();
@@ -20,6 +42,9 @@ public class NodeTest {
         assertEquals((140 - 15) / 35, n.getY());
     }
 
+    /**
+     * Comprueba que getgCost() y setgCost() funcionen correctamente.
+     */
     @Test
     public void testgCost() {
         Node n = new Node();
@@ -27,6 +52,9 @@ public class NodeTest {
         assertEquals(12.5, n.getgCost());
     }
 
+    /**
+     * Comprueba que getFCost() y setFCost() funcionen correctamente.
+     */
     @Test
     public void testFCost() {
         Node n = new Node();
@@ -34,6 +62,10 @@ public class NodeTest {
         assertEquals(9.9, n.getFCost());
     }
 
+    /**
+     * Verifica que el método estático distance() calcule correctamente
+     * la distancia euclidiana entre dos nodos.
+     */
     @Test
     public void testDistance() {
         Node a = new Node(0, 0);
@@ -41,6 +73,10 @@ public class NodeTest {
         assertEquals(5.0, Node.distance(a, b));
     }
 
+    /**
+     * Prueba que el método Clicked() cambie el color del nodo
+     * dependiendo del código de botón recibido.
+     */
     @Test
     public void testClickedChangesColor() {
         Node n = new Node();
@@ -58,6 +94,10 @@ public class NodeTest {
         assertEquals(Color.LIGHT_GRAY, n.getColor());
     }
 
+    /**
+     * Verifica que setAsWall() establezca correctamente el color BLACK
+     * y que isWall() lo detecte.
+     */
     @Test
     public void testSetAsWall() {
         Node n = new Node();
@@ -66,6 +106,9 @@ public class NodeTest {
         assertTrue(n.isWall());
     }
 
+    /**
+     * Verifica que clearNode() restablezca el color LIGHT_GRAY.
+     */
     @Test
     public void testClearNode() {
         Node n = new Node();
@@ -74,6 +117,10 @@ public class NodeTest {
         assertEquals(Color.LIGHT_GRAY, n.getColor());
     }
 
+    /**
+     * Valida el funcionamiento de los métodos booleanos que identifican
+     * el estado del nodo según su color.
+     */
     @Test
     public void testColorFlags() {
         Node n = new Node();
@@ -103,6 +150,10 @@ public class NodeTest {
         assertTrue(n.isSearched());
     }
 
+    /**
+     * Prueba que getNeighbours() solo devuelva los nodos configurados
+     * como caminos válidos (isPath() == true).
+     */
     @Test
     public void testGetNeighbours() {
         Node center = new Node();
@@ -114,10 +165,10 @@ public class NodeTest {
         Node blocked = new Node();
 
         left.setColor(Color.LIGHT_GRAY);
-        right.setColor(Color.RED);     // red counts as path
-        up.setColor(Color.BLACK);      // blocked, not a path
+        right.setColor(Color.RED);     // Red es path
+        up.setColor(Color.BLACK);      // Bloqueado
         down.setColor(Color.LIGHT_GRAY);
-        blocked.setColor(Color.BLACK); // extra blocked node
+        blocked.setColor(Color.BLACK);
 
         center.setDirections(left, right, up, down);
 
