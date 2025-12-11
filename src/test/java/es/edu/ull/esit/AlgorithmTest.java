@@ -61,9 +61,9 @@ class AlgorithmTest {
     void testDijkstra() {
         algorithm.setStrategy(new DijkstraAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        // We can't easily assert the path visually, but we can check if end node was processed.
-        // This requires modification in Node or Algorithm to track visited status for testing.
-        assertTrue(true); // Placeholder
+        
+        // Verify end node was reached (colored MAGENTA)
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
     }
     
     /**
@@ -74,8 +74,9 @@ class AlgorithmTest {
     void testAstar() {
         algorithm.setStrategy(new AstarAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        // Basic smoke test - algorithm should complete without throwing exceptions
-        assertTrue(true);
+        
+        // Verify end node was reached
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
     }
     
     /**
@@ -86,7 +87,9 @@ class AlgorithmTest {
     void testBfs() {
         algorithm.setStrategy(new BfsAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        assertTrue(true);
+        
+        // Verify end node was reached
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
     }
     
     /**
@@ -97,7 +100,9 @@ class AlgorithmTest {
     void testDfs() {
         algorithm.setStrategy(new DfsAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        assertTrue(true);
+        
+        // Verify end node was reached
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
     }
 
     /**
@@ -108,7 +113,9 @@ class AlgorithmTest {
     void testGreedyBestFirstSearch() {
         algorithm.setStrategy(new GreedyBestFirstAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        assertTrue(true); // Placeholder
+        
+        // Verify end node was reached
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
     }
 
     /**
@@ -119,6 +126,34 @@ class AlgorithmTest {
     void testBidirectionalSearch() {
         algorithm.setStrategy(new BidirectionalSearchAlgorithm());
         algorithm.performSearch(start, end, WIDTH, HEIGHT);
-        assertTrue(true); // Placeholder
+        
+        // Verify end node was reached
+        assertEquals(java.awt.Color.MAGENTA, end.getColor());
+    }
+
+    /**
+     * Tests behavior when no path exists.
+     */
+    @Test
+    void testNoPath() {
+        // Surround start with walls
+        for (Node neighbor : start.getNeighbours()) {
+            neighbor.setAsWall();
+        }
+        
+        algorithm.setStrategy(new BfsAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
+        
+        // End should not be reached (still RED)
+        assertEquals(java.awt.Color.RED, end.getColor());
+    }
+    
+    /**
+     * Tests getters and setters for search time.
+     */
+    @Test
+    void testSearchTime() {
+        algorithm.setSearchTime(50);
+        assertEquals(50, algorithm.getSearchTime());
     }
 }

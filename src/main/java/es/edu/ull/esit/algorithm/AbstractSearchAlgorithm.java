@@ -24,7 +24,7 @@ public abstract class AbstractSearchAlgorithm implements SearchAlgorithm {
             pathConstructor = prev[pathConstructor.getX()][pathConstructor.getY()];
 
             if (pathConstructor != null) {
-                pathConstructor.setColor(Color.ORANGE);
+                pathConstructor.setColor(Color.MAGENTA);
             }
             try {
                 Thread.sleep(searchTime);

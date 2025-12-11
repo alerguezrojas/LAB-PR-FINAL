@@ -37,17 +37,21 @@ class MazeGeneratorTest {
     @Test
     void testGenerate() {
         mazeGenerator.generate();
-        // Check that the maze is not all walls
-        boolean hasPath = false;
+        
+        int wallCount = 0;
+        int pathCount = 0;
+        
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                if (!grid[i][j].isWall()) {
-                    hasPath = true;
-                    break;
+                if (grid[i][j].isWall()) {
+                    wallCount++;
+                } else {
+                    pathCount++;
                 }
             }
-            if(hasPath) break;
         }
-        assertTrue(hasPath);
+        
+        assertTrue(wallCount > 0, "Maze should contain walls");
+        assertTrue(pathCount > 0, "Maze should contain paths");
     }
 }
