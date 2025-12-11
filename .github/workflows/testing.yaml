@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: {}
+
+# Permisos explícitos para el token GITHUB_TOKEN
+permissions:
+  contents: read
+  checks: write          # <-- necesario para publicar check-runs (test results)
+  pull-requests: write   # permite comentar la cobertura en el PR
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [17, 21]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Build, Test and SonarCloud analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn --batch-mode -V \
+              clean verify sonar:sonar \
+              -DskipTests=false \
+              -Dsonar.projectKey=ULLHHUB_LAB-PR-FINAL \
+              -Dsonar.organization=ullhhub \
+              -Dsonar.host.url=https://sonarcloud.io  \
+              -Dsonar.login=${SONAR_TOKEN} \
+              -Dsonar.qualitygate.wait=true
+
+      # Publicar resumen de tests en el workflow y Checks del PR
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Tests (Java ${{ matrix.java }})
+          path: 'target/surefire-reports/*.xml'
+          reporter: java-junit
+          list-suites: 'all'
+          list-tests: 'failed'
+
+      # Comentar en el PR el % de cobertura (JaCoCo)
+      - name: Comment coverage on PR
+        uses: madrapps/jacoco-report@v1.6.1
+        if: github.event_name == 'pull_request'
+        with:
+          title: 📊 Cobertura de código
+          paths: ./target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          update-comment: true
