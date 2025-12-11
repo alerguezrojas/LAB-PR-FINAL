@@ -156,4 +156,31 @@ class AlgorithmTest {
         algorithm.setSearchTime(50);
         assertEquals(50, algorithm.getSearchTime());
     }
+
+    @Test
+    void testPerformSearchNullStrategy() {
+        algorithm.setStrategy(null);
+        // Should not throw exception
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
+    }
+
+    @Test
+    void testSearchInterruption() {
+        algorithm.setStrategy(new BfsAlgorithm());
+        algorithm.setSearchTime(100); // Set delay to allow interruption
+        
+        Thread searchThread = new Thread(() -> {
+            algorithm.performSearch(start, end, WIDTH, HEIGHT);
+        });
+        
+        searchThread.start();
+        try {
+            Thread.sleep(10); // Let it start
+            searchThread.interrupt(); // Interrupt sleep
+            searchThread.join(1000);
+        } catch (InterruptedException e) {
+            fail("Test interrupted");
+        }
+        // If we reach here without exception, the catch block in Algorithm/AbstractSearchAlgorithm handled it
+    }
 }

@@ -213,6 +213,21 @@ class MainTest {
         Node corner = nodeList[0][0];
         java.util.List<Node> cornerNeighbors = corner.getNeighbours();
         assertEquals(2, cornerNeighbors.size());
+        
+        // Check top edge (not corner) - 5,0
+        Node topEdge = nodeList[5][0];
+        java.util.List<Node> topNeighbors = topEdge.getNeighbours();
+        assertEquals(3, topNeighbors.size()); // left, right, down
+        
+        // Check left edge (not corner) - 0,5
+        Node leftEdge = nodeList[0][5];
+        java.util.List<Node> leftNeighbors = leftEdge.getNeighbours();
+        assertEquals(3, leftNeighbors.size()); // up, down, right
+        
+        // Check bottom-right corner - 27,18
+        Node bottomRight = nodeList[27][18];
+        java.util.List<Node> brNeighbors = bottomRight.getNeighbours();
+        assertEquals(2, brNeighbors.size()); // left, up
     }
 
     @Test
