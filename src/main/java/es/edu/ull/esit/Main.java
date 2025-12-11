@@ -8,6 +8,7 @@ import es.edu.ull.esit.algorithm.DijkstraAlgorithm;
 import es.edu.ull.esit.algorithm.GreedyBestFirstAlgorithm;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -83,9 +84,9 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	 * Sets up the menu bar with File, Board, and Algorithms menus.
 	 * Configures all menu items and their action listeners.
 	 * 
-	 * @param frame The main application frame
+	 * @param frame The main application container
 	 */
-	public static void SetupMenu(JFrame frame) {
+	public static void SetupMenu(Container frame) {
 		JMenuBar bar = new JMenuBar();
 		bar.setBounds(0, 0, WIDTH, 25);
 		frame.add(bar);

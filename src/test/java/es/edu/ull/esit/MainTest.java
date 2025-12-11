@@ -172,40 +172,21 @@ class MainTest {
 
     @Test
     void testMenuActions() {
-        JFrame frame = new JFrame();
-        Main.SetupMenu(frame);
+        // Use JPanel instead of JFrame to avoid HeadlessException in CI environments
+        JPanel panel = new JPanel();
+        Main.SetupMenu(panel);
         
         JMenuBar bar = null;
         
-        // Check content pane
-        for (Component c : frame.getContentPane().getComponents()) {
+        // Check components directly
+        for (Component c : panel.getComponents()) {
             if (c instanceof JMenuBar) {
                 bar = (JMenuBar) c;
                 break;
             }
         }
         
-        // If not found, check root pane's layered pane (sometimes added there in null layout?)
-        if (bar == null) {
-             for (Component c : frame.getRootPane().getLayeredPane().getComponents()) {
-                if (c instanceof JMenuBar) {
-                    bar = (JMenuBar) c;
-                    break;
-                }
-            }
-        }
-        
-        // If still not found, check frame components directly
-        if (bar == null) {
-            for (Component c : frame.getComponents()) {
-                if (c instanceof JMenuBar) {
-                    bar = (JMenuBar) c;
-                    break;
-                }
-            }
-        }
-        
-        assertNotNull(bar, "JMenuBar should be found in the frame");
+        assertNotNull(bar, "JMenuBar should be found in the panel");
         
         JMenu boardMenu = bar.getMenu(1);
         JMenu algorithmsMenu = bar.getMenu(2);
