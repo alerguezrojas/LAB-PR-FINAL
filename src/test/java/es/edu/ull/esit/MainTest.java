@@ -135,6 +135,16 @@ class MainTest {
         mainApp.clearSearchResults();
         assertFalse(testNode.isSearched());
         assertEquals(Color.LIGHT_GRAY, testNode.getColor());
+
+        // Test clearing solution path (MAGENTA)
+        Node pathNode = nodeList[6][6];
+        pathNode.setColor(Color.MAGENTA);
+        // Currently this fails because isSearched() doesn't include MAGENTA
+        // assertTrue(pathNode.isSearched()); 
+        
+        mainApp.clearSearchResults();
+        // If bug exists, this will be MAGENTA instead of LIGHT_GRAY
+        assertEquals(Color.LIGHT_GRAY, pathNode.getColor(), "Solution path (MAGENTA) should be cleared");
     }
 
     @Test

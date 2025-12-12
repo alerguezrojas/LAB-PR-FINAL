@@ -285,7 +285,7 @@ public class Node {
 	 * @return true if the node has been visited during search, false otherwise
 	 */
 	public boolean isSearched() {
-		return (nodeColor == Color.BLUE || nodeColor == Color.ORANGE || nodeColor == Color.CYAN);
+		return (nodeColor == Color.BLUE || nodeColor == Color.ORANGE || nodeColor == Color.CYAN || nodeColor == Color.MAGENTA);
 	}
 
 }
