@@ -1,5 +1,6 @@
 package es.edu.ull.esit;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
@@ -95,22 +96,27 @@ public class Node {
 	 * @param buttonCode The mouse button code (1-4)
 	 */
 	public void Clicked(int buttonCode) {
-		System.out.println("called");
+		System.out.print("called:");
 		if (buttonCode == 1) {
 			// WALL
 			nodeColor = Color.BLACK;
+            System.out.println("Wall");
 
 		}
 		if (buttonCode == 2) {
 			// START
 			nodeColor = Color.GREEN;
+            System.out.println("Green");
 
-		}
+
+        }
 		if (buttonCode == 3) {
 			// END
 			nodeColor = Color.RED;
+            System.out.println("Red");
 
-		}
+
+        }
 		if (buttonCode == 4) {
 			// CLEAR
 			clearNode();
