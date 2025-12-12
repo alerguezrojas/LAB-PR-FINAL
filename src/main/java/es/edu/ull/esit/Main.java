@@ -347,30 +347,38 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	 * @throws IOException If an I/O error occurs during file writing
 	 */
 	public void saveMaze() throws IOException {
-		JFileChooser fileChooser = new JFileChooser();
-		int option = fileChooser.showSaveDialog(frame);
-		if (option == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			String ext = file.getAbsolutePath().endsWith(".maze") ? "" : ".maze";
-			try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(file.getAbsolutePath() + ext))) {
-				for (int i = 0; i < nodeList.length; i++) {
-					for (int j = 0; j < nodeList[i].length; j++) {
-						if (nodeList[i][j].isWall()) {
-							outputWriter.write("1");
-						} else if (nodeList[i][j].isStart()) {
-							outputWriter.write("2");
-						} else if (nodeList[i][j].isEnd()) {
-							outputWriter.write("3");
-						} else {
-							outputWriter.write("0");
-						}
-					}
-					outputWriter.newLine();
-				}
-				outputWriter.flush();
+		saveMazeToFile(null);
+	}
+
+	public void saveMazeToFile(File file) throws IOException {
+		if (file == null) {
+			JFileChooser fileChooser = new JFileChooser();
+			int option = fileChooser.showSaveDialog(frame);
+			if (option == JFileChooser.APPROVE_OPTION) {
+				file = fileChooser.getSelectedFile();
+			} else {
+				return;
 			}
 		}
-
+		
+		String ext = file.getAbsolutePath().endsWith(".maze") ? "" : ".maze";
+		try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(file.getAbsolutePath() + ext))) {
+			for (int i = 0; i < nodeList.length; i++) {
+				for (int j = 0; j < nodeList[i].length; j++) {
+					if (nodeList[i][j].isWall()) {
+						outputWriter.write("1");
+					} else if (nodeList[i][j].isStart()) {
+						outputWriter.write("2");
+					} else if (nodeList[i][j].isEnd()) {
+						outputWriter.write("3");
+					} else {
+						outputWriter.write("0");
+					}
+				}
+				outputWriter.newLine();
+			}
+			outputWriter.flush();
+		}
 	}
 
 	/**
@@ -380,42 +388,51 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	 * @throws IOException If an I/O error occurs during file reading
 	 */
 	public void openMaze() throws IOException {
-		JFileChooser fileChooser = new JFileChooser();
-		int option = fileChooser.showOpenDialog(frame);
-		if (option == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			try (BufferedReader reader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
-				String line = null;
-				for (int i = 0; i < NODES_WIDTH; i++) {
-					line = reader.readLine();
-					for (int j = 0; j < NODES_HEIGHT; j++) {
-						
-						//nodeList[i][j].setColor(Color.BLACK);
-						int nodeType = Character.getNumericValue(line.charAt(j));
-						System.out.println("node is " + nodeType);
-						switch (nodeType) {
-						case 0:
-							nodeList[i][j].setColor(Color.LIGHT_GRAY);
-							break;
-						case 1:
-							nodeList[i][j].setColor(Color.BLACK);
-							break;
+		openMazeFromFile(null);
+	}
 
-						case 2:
-							nodeList[i][j].setColor(Color.GREEN);
-							start = nodeList[i][j];
-							break;
-						case 3:
-							nodeList[i][j].setColor(Color.RED);
-							target = nodeList[i][j];
-							break;
-						}
-					}
-
-				}
+	public void openMazeFromFile(File file) throws IOException {
+		if (file == null) {
+			JFileChooser fileChooser = new JFileChooser();
+			int option = fileChooser.showOpenDialog(frame);
+			if (option == JFileChooser.APPROVE_OPTION) {
+				file = fileChooser.getSelectedFile();
+			} else {
+				return;
 			}
-			// System.out.println(stringMaze);
 		}
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+			String line = null;
+			for (int i = 0; i < NODES_WIDTH; i++) {
+				line = reader.readLine();
+				for (int j = 0; j < NODES_HEIGHT; j++) {
+					
+					//nodeList[i][j].setColor(Color.BLACK);
+					int nodeType = Character.getNumericValue(line.charAt(j));
+					System.out.println("node is " + nodeType);
+					switch (nodeType) {
+					case 0:
+						nodeList[i][j].setColor(Color.LIGHT_GRAY);
+						break;
+					case 1:
+						nodeList[i][j].setColor(Color.BLACK);
+						break;
+
+					case 2:
+						nodeList[i][j].setColor(Color.GREEN);
+						start = nodeList[i][j];
+						break;
+					case 3:
+						nodeList[i][j].setColor(Color.RED);
+						target = nodeList[i][j];
+						break;
+					}
+				}
+
+			}
+		}
+		// System.out.println(stringMaze);
 	}
 
 	/**

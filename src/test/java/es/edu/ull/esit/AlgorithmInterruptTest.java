@@ -1,8 +1,6 @@
 package es.edu.ull.esit;
 
-import es.edu.ull.esit.algorithm.AstarAlgorithm;
-import es.edu.ull.esit.algorithm.DijkstraAlgorithm;
-import es.edu.ull.esit.algorithm.SearchAlgorithm;
+import es.edu.ull.esit.algorithm.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +53,26 @@ public class AlgorithmInterruptTest {
     @Test
     void testDijkstraInterruption() throws InterruptedException {
         runAlgorithmWithInterruption(new DijkstraAlgorithm());
+    }
+
+    @Test
+    void testBfsInterruption() throws InterruptedException {
+        runAlgorithmWithInterruption(new BfsAlgorithm());
+    }
+
+    @Test
+    void testDfsInterruption() throws InterruptedException {
+        runAlgorithmWithInterruption(new DfsAlgorithm());
+    }
+
+    @Test
+    void testBidirectionalInterruption() throws InterruptedException {
+        runAlgorithmWithInterruption(new BidirectionalSearchAlgorithm());
+    }
+
+    @Test
+    void testGreedyBestFirstInterruption() throws InterruptedException {
+        runAlgorithmWithInterruption(new GreedyBestFirstAlgorithm());
     }
 
     private void runAlgorithmWithInterruption(SearchAlgorithm algorithm) throws InterruptedException {
