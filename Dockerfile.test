@@ -1,0 +1,19 @@
+# Multi-stage Dockerfile para probar en Linux
+FROM maven:3.9-eclipse-temurin-17 AS build
+
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+
+# Compilar y probar
+RUN mvn clean test
+
+# Empaquetar
+RUN mvn package -DskipTests
+
+# Runtime
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
