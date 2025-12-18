@@ -16,11 +16,12 @@ permissions:
 
 jobs:
   build:
-    name: Maven Build - Java ${{ matrix.java }}
-    runs-on: ubuntu-latest
+    name: Maven Build - Java ${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         java: [17, 21, 25]
 
     steps:
