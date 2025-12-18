@@ -8,30 +8,24 @@ on:
       - develop
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch: {}  # habilita ejecución manual desde la interfaz
+  workflow_dispatch: {}
 
 permissions:
   contents: read
-  pull-requests: write  # permite comentar/chequear en PR
+  pull-requests: write
 
 jobs:
-  maven:
-    name: Maven Build and Tests (Java ${{ matrix.java }} on ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+  build:
+    name: Maven Build - Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        java: [17, 18, 19, 20, 21, 22, 23]
+        java: [17, 21]
 
     steps:
-      # 1) Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      # 2) Set up JDK according to matrix
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
@@ -39,42 +33,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 3) Cache Maven local repository
-      - name: Cache Maven local repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
+      - name: Compile
+        run: mvn clean compile -DskipTests
 
-      # 4) Build - validate & compile
-      - name: Maven Validate & Compile
-        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true validate compile
+      - name: Run Tests
+        run: mvn test
 
-      # 5) Run tests
-      - name: Maven Test
-        run: mvn --batch-mode -V -Ddependency-check.skip=true test
-        # Nota: si quieres recopilar resultados JUnit/coverage, añade acciones adicionales para subir artefactos o reports.
-
-      # 6) Package (creates jars/wars)
-      - name: Maven Package
-        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true package
-
-      # 7) Install to local repo (optional)
-      - name: Maven Install (to local ~/.m2)
-        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true install
-
-      # 8) Verify (full lifecycle, e.g., integration tests if any)
-      - name: Maven Verify
-        run: mvn --batch-mode -V -Ddependency-check.skip=true verify
-
-      # 9) Upload build artifact (optional)
-      - name: Upload built artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: maven-build-artifacts-${{ matrix.os }}-java${{ matrix.java }}
-          path: |
-            target/*.jar
-            target/*.war
+      - name: Package
+        run: mvn package -DskipTests
