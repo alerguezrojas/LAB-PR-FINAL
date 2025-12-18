@@ -46,7 +46,7 @@ public abstract class AbstractSearchAlgorithm implements SearchAlgorithm {
      */
     protected Node getLeastHeuristic(List<Node> nodes, Node end, Node start) {
         if (!nodes.isEmpty()) {
-            Node leastH = nodes.get(0);
+            Node leastH = nodes.getFirst();
             for (int i = 1; i < nodes.size(); i++) {
                 // h-cost: heuristic distance to end
                 double h1 = Node.distance(nodes.get(i), end);

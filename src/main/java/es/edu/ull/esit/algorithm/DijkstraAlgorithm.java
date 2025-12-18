@@ -24,7 +24,7 @@ public class DijkstraAlgorithm extends AbstractSearchAlgorithm {
         while (!openList.isEmpty()) {
             Collections.sort(openList, Comparator.comparingDouble(node -> node.getgCost()));
 
-            Node curNode = openList.remove(0);
+            Node curNode = openList.removeFirst();
 
             if (curNode.isEnd()) {
                 curNode.setColor(Color.MAGENTA);

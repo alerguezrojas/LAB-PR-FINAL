@@ -309,9 +309,9 @@ class MainTest {
         boolean menuBarFound = false;
         JMenuBar menuBar = null;
         for (Component c : panel.getComponents()) {
-            if (c instanceof JMenuBar) {
+            if (c instanceof JMenuBar bar) {
                 menuBarFound = true;
-                menuBar = (JMenuBar) c;
+                menuBar = bar;
                 break;
             }
         }
